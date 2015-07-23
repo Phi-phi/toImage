@@ -2,7 +2,7 @@
 
 class toCode{
 	private $code = array();
-	private $path;
+	public $path;
 
 	function setImg(){
 		if (isset($_FILES['src_img']['error']) && is_int($_FILES['src_img']['error'])) {
@@ -29,7 +29,7 @@ class toCode{
 			}	
 
 			// ファイルデータからSHA-1ハッシュを取ってファイル名を決定し、ファイルを保存する
-			$path = sprintf('./img/tmp/%s%s', sha1_file($_FILES['src_img']['tmp_name']), image_type_to_extension($type));
+			$path = sprintf('./img/tmp/%s', $_FILES['src_img']['name']);
 			if (!move_uploaded_file($_FILES['src_img']['tmp_name'], $path)) {
 			    throw new RuntimeException('ファイル保存時にエラーが発生しました');
 			}
@@ -46,29 +46,38 @@ class toCode{
 		}
 	}
 
-	function test(){
+	function test($which){
 		$code = array();
 		$path = $this -> path;
 		$im = imagecreatefrompng($path);
 		list($width, $height) = getimagesize($path);
-		echo $width. $height;
+		//echo $width. $height;
 		for($y = 0; $y < $width; ++$y){
 			for($x = 0; $x < $height; ++$x){
 				$rgb = imagecolorat($im, $x, $y);
 				$colors = imagecolorsforindex($im, $rgb);
 
-				echo "<pre>";
+				/*echo "<pre>";
 				echo $y * $width + $x + 1;
 				echo "<br>";
 				var_dump($colors);
-				echo "</pre>";
+				echo "</pre>";*/
 
 				array_push($code, 255 - $colors["red"], 255 - $colors["green"], 255 - $colors["blue"]);
 			}
 		}
 
+		//var_dump($code);
+		$new_code = "";
+
 		for($i = 0; $i < count($code); ++$i){
-			echo nl2br(htmlspecialchars(chr($code[$i])));
+			if($code[$i] == 2) break;
+			$new_code .= chr($code[$i]);
 		}
+		unlink($path);
+		if($which){
+			return htmlspecialchars($new_code);
+		}
+		return $new_code;
 	}
 }
