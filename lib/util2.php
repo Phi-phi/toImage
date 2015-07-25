@@ -19,26 +19,26 @@ class toCode{
 			        throw new RuntimeException('ファイルサイズが大きすぎます');
 			    default:
 			        throw new RuntimeException('その他のエラーが発生しました');
-			}	
+			}
 
 			// $_FILES['upfile']['mime']の値はブラウザ側で偽装可能なので、MIMEタイプを自前でチェックする
 			$type = @exif_imagetype($_FILES['src_img']['tmp_name']);	
 
 			if (!in_array($type, [IMAGETYPE_GIF, IMAGETYPE_JPEG, IMAGETYPE_PNG], true)) {
 			    throw new RuntimeException('画像形式が未対応です');
-			}	
+			}
 
 			// ファイルデータからSHA-1ハッシュを取ってファイル名を決定し、ファイルを保存する
 			$path = sprintf('./img/tmp/%s', $_FILES['src_img']['name']);
 			if (!move_uploaded_file($_FILES['src_img']['tmp_name'], $path)) {
 			    throw new RuntimeException('ファイル保存時にエラーが発生しました');
 			}
-		       chmod($path, 0644);	
+		       chmod($path, 0644);
 
 		        $msg = ['green', 'ファイルは正常にアップロードされました'];
 		        $this -> path = $path;
 
-		    } catch (RuntimeException $e) {	
+		    } catch (RuntimeException $e) {
 
 		        $msg = ['red', $e->getMessage()];
 
@@ -74,9 +74,10 @@ class toCode{
 			if($code[$i] == 2) break;
 			$new_code .= chr($code[$i]);
 		}
-		unlink($path);
+		if(preg_match("/\/tmp\//", $path))
+			unlink($path);
 		if($which){
-			return htmlspecialchars($new_code);
+			return nl2br(htmlspecialchars($new_code));
 		}
 		return $new_code;
 	}

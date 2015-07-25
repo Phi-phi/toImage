@@ -6,7 +6,7 @@ $toco = new toCode;
 
 $toco -> setImg();
 
-if(isset($_POST["escape"]) && $_POST["escape"]){
+if(isset($_POST["escape"]) && $_POST["escape"] == "1"){
 	$which = true;
 }else{
 	$which = false;

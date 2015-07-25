@@ -8,6 +8,6 @@ require_once(__DIR__."/setCode.php");
 	<meta charset="utf-8">
 </head>
 <body>
-<?= setCode("sample"); ?>
+<?= setCode("sample3"); ?>
 </body>
 </html>

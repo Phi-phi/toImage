@@ -4,11 +4,14 @@ class toImage{
 
 	private $codes = array();
 	private $new_codes = array();
+	private $other_exist;
+	private $other_size;
 	private $len;
 	private $title;
 	private $side;
 	private $im;
 	private $path;
+	private $path2;
 
 	private function toCode(){
 		$old = $this -> codes;
@@ -25,13 +28,36 @@ class toImage{
 		}
 	}
 
+	function checkSame($title){
+		$other_path = "./img/".$title.".png";
+		if(file_exists($other_path)){
+			list($width, $height) = getimagesize($other_path);
+			$this -> other_size = $width;
+			return true;
+		}else{
+			return false;
+		}
+	}
+
 	private function setSize(){
 		$len = $this -> len;
-		$side = ceil(sqrt($len / 3));
+		$title = $this -> title;
+		$which = $this -> checkSame($title);
+
+		if($which){
+			$side = $this -> other_size;
+			$other_side = ceil(sqrt($len / 3));
+			if($side < $other_side){
+				$side = $other_side;
+			}
+		}else{
+			$side = ceil(sqrt($len / 3));
+		}
 
 		$this -> im = @imagecreatetruecolor($side, $side)
 			or die('Cannot Initialize new GD image stream');
 
+		$this -> other_exist = $which;
 		$this -> side = $side;
 	}
 
@@ -83,10 +109,25 @@ class toImage{
 			$title = "img";
 		}
 
-		$path = "./img/".$title.".png";
+		$path = "./img/".$title;
+
+		if($this -> other_exist){
+			$this -> path2 = $path.".png";
+			$path .= "_other";
+		}
+
+		$path .= ".png";
 		imagepng($im, $path);
 		imagedestroy($im);
 		$this -> path = $path;
+	}
+
+	function disp(){
+		$width = " width='200' ";
+		echo "<img src='".$this -> path."'><br>";
+		if($this -> other_exist)
+			echo "old one<br>";
+			echo "<img src='".$this -> path2."'><br>";
 	}
 
 	function start(){
