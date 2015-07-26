@@ -46,16 +46,21 @@ class toImage{
 
 		if($which){
 			$side = $this -> other_size;
-			$other_side = ceil(sqrt($len / 3));
+			$other_side = ceil(sqrt($len));
 			if($side < $other_side){
 				$side = $other_side;
 			}
 		}else{
-			$side = ceil(sqrt($len / 3));
+			$side = ceil(sqrt($len));
 		}
 
 		$this -> im = @imagecreatetruecolor($side, $side)
 			or die('Cannot Initialize new GD image stream');
+
+		//ブレンドモードを無効にする
+		imagealphablending($this -> im, false);
+		//完全なアルファチャネル情報を保存するフラグをonにする
+		imagesavealpha($this -> im, true);
 
 		$this -> other_exist = $which;
 		$this -> side = $side;
@@ -81,24 +86,15 @@ class toImage{
 				$y = floor(($i - $x) / $side) + 1;
 			}
 
-			$rgb[$i] = array();
-
-			for($m = 0; $m < 3; ++$m){
-				if(($n = ($i - 1) * 3 + $m) >= $len){
-					$codes[$n] = 3;
-					$end = true;
-				}
-				array_push($rgb[$i], $codes[$n]);
-			}
-
 			$x--;
 			$y--;
 			//echo $x."-".$y."<br>";
 
-			$color = imagecolorallocate($im, 255 - $rgb[$i][0], 255 - $rgb[$i][1], 255 - $rgb[$i][2]);
+			if($len <= $i)
+				$color = imagecolorallocatealpha($im, 159, 253, 242, rand(100,255));
+			else
+				$color = imagecolorallocatealpha($im, 159, 253, 242, $codes[$i]);
 			imagesetpixel($im, $x, $y, $color);
-			if($end)
-				break;
 
 		}
 		/*echo "<pre>";

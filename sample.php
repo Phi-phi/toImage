@@ -8,6 +8,6 @@ require_once(__DIR__."/setCode.php");
 	<meta charset="utf-8">
 </head>
 <body>
-<?= setCode("sample3"); ?>
+	<?= setCode($_POST["img_name"]) ?>
 </body>
 </html>

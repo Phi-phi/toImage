@@ -2,6 +2,7 @@ var wid,hei;
 var str;
 
 function toImage(){
+	console.time("time");
 	var canvas = document.getElementById("image");
 	var jscode = document.getElementById("code").value;
 	document.getElementById("code").value = "";
@@ -34,9 +35,11 @@ function toImage(){
 	console.log(imgdata.data);
 	imgdata.data[length * 4 + 1] = 2;
 	ctx.putImageData(imgdata,0,0);
+	console.timeEnd("time");
 }
 
 function Imageto(){
+	console.time("time2");
 	var canvas = document.getElementById("image");
 	var length = str.length;
 	var code = [];
@@ -81,6 +84,7 @@ function Imageto(){
 	}
 		console.log(code);
 	document.getElementById("code").value = code.join('');
+	console.timeEnd("time2");
 	ctx.clearRect(0, 0, canvas.width, canvas.height);
 }
 

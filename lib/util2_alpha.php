@@ -63,20 +63,18 @@ class toCode{
 				var_dump($colors);
 				echo "</pre>";*/
 
-				array_push($code, 255 - $colors["red"], 255 - $colors["green"], 255 - $colors["blue"]);
+				array_push($code, $colors["alpha"]);
 			}
 		}
 		/*echo "<pre>";
 		var_dump($code);
 		echo "</pre>";*/
 		$new_code = "";
-		echo count($code)."<br>";
 
 		for($i = 0; $i < count($code); ++$i){
 			if($code[$i] == 3) break;
 			$new_code .= chr($code[$i]);
 		}
-
 		if(preg_match("/\/tmp\//", $path))
 			unlink($path);
 		if($which){

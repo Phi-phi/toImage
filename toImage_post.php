@@ -9,3 +9,7 @@ $toim -> setName($_POST["title"]);
 $toim -> start();
 
 $toim -> disp();
+echo $time = microtime(true) - $_SERVER["REQUEST_TIME_FLOAT"];
+
+?>
+	<a href="./index.html">back</a>

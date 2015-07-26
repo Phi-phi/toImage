@@ -18,4 +18,3 @@ function setCode($imgname){
 
 	return "<script>".$code."</script>";
 }
-
