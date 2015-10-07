@@ -1,5 +1,6 @@
 var wid,hei;
 var str;
+var num;
 
 function toImage(){
 	console.time("time");
@@ -7,34 +8,33 @@ function toImage(){
 	var jscode = document.getElementById("code").value;
 	document.getElementById("code").value = "";
 	str = jscode;
-	var length = parseInt(jscode.length/2);
+	var length = parseInt(jscode.length/3);
 	console.log(length);
-	wid = parseInt(Math.sqrt(length));
-	hei = parseInt(length/wid)+1;
-	var ctx = canvas.getContext('2d');
+
+	wid = parseInt(Math.sqrt(length)) + 1;
+	hei = wid;
 	canvas.style.width = wid+"px";
 	canvas.style.height = hei + "px";
-	ctx.fillStyle = 'lightgrey';
-	ctx.fillRect(0,0,wid,hei);
-	var imgdata = ctx.createImageData(wid, hei);
+
+	var ctx = canvas.getContext('2d');
+
+	var imagedata = ctx.createImageData(wid, hei);
 	var i = 0;
-	console.log(imgdata);
+	console.log(wid, hei, "start",imagedata);
 	var enddata = false;
+	var total = wid * hei;
 	loop1st:
-	for(var i = 0; i < length; ++i){
-		for(var x = 0; x < 4; ++x){
-			if(x < 2) imgdata.data[i * 4 + x] = jscode.charCodeAt(i * 2) * 2;
-			else imgdata.data[i * 4 + x] = jscode.charCodeAt(i * 2 + 1) * 2;
-			if(imgdata.data[i * 4 + x] == 0 || isNaN(imgdata.data[i * 4 + x])) {
-				enddata = true;
-				console.log("end");
-				break loop1st;
-			}
+	for(var y = 0; y < imagedata.height; y++) {
+		for(var x = 0; x < imagedata.width; x++) {
+			imagedata.data[(y * imagedata.width + x) * 4 + 0] = 255 - jscode.charCodeAt((y * imagedata.width + x) * 3 + 0); // 赤 (R)
+			imagedata.data[(y * imagedata.width + x) * 4 + 1] = 255 - jscode.charCodeAt((y * imagedata.width + x) * 3 + 1);
+			imagedata.data[(y * imagedata.width + x) * 4 + 2] = 255 - jscode.charCodeAt((y * imagedata.width + x) * 3 + 2);
+			imagedata.data[(y * imagedata.width + x) * 4 + 3] = 0xFF; // 不透明度 (A)
 		}
 	}
-	console.log(imgdata.data);
-	imgdata.data[length * 4 + 1] = 2;
-	ctx.putImageData(imgdata,0,0);
+	console.log(imagedata.data);
+	imagedata.data[length * 4 + 1] = 3;
+	ctx.putImageData(imagedata,0,0);
 	console.timeEnd("time");
 }
 
@@ -44,45 +44,20 @@ function Imageto(){
 	var length = str.length;
 	var code = [];
 	var ctx = canvas.getContext('2d');
-	var imgdata = ctx.getImageData(0,0,wid,hei).data;
+	var imgdata = ctx.getImageData(0,0,wid,hei);
 	//console.log(imgdata);
-	var imglength = imgdata.length / 2;
-	console.log(imglength);
-	loop1:
-	for(var i = 0; i < imglength; i+=2){
-		var codenum = [];
-		for(var x = 0; x < 4; ++x){
-			codenum[x] = parseInt(imgdata[i * 2 + x]);
-			if(codenum[x] == 2) break;
+	for(var y = 0; y < imgdata.height; y++) {
+		for(var x = 0; x < imgdata.width; x++) {
+			var one = 255 - imgdata.data[(y * imgdata.width + x) * 4 + 0];
+			var two = 255 - imgdata.data[(y * imgdata.width + x) * 4 + 1];
+			var three = 255 - imgdata.data[(y * imgdata.width + x) * 4 + 2];
+			code.push(String.fromCharCode(one));
+			code.push(String.fromCharCode(two));
+			code.push(String.fromCharCode(three));
 		}
-		var codedata;
-		for(var x = 0; x < 2; ++x){
-			//console.log(codenum);
-			var code1 = codenum[x * 2], code2 = codenum[x * 2 + 1];
-			//console.log("code1,2",code1, code2);
-			if(code1 != code2){
-				if(code1%2 != 0 && code2%2 != 0){
-					if(code1 > code2){
-						codedata = String.fromCharCode(parseInt(code1 / 2));
-					}else if(code1 < code2){
-						codedata = String.fromCharCode(parseInt(code2 / 2));
-					}else{
-						codedata = String.fromCharCode(parseInt((code1 + 2) / 2));
-					}
-				}else if(code1%2 == 0){
-					codedata = String.fromCharCode(parseInt(code1 / 2));
-				}else{
-					codedata = String.fromCharCode(parseInt(code2 / 2));
-				}
-			}
-			codedata = String.fromCharCode(parseInt(code1 / 2));
-			//console.log(code1,code2, String.fromCharCode(parseInt(code1 / 2)), String.fromCharCode(parseInt(code2 / 2)));
-			code.push(codedata);
-			if(isNaN(code1) || isNaN(code2) || code1 == 0 || code2 == 0) break loop1;
-		}
-
 	}
-		console.log(code);
+
+	console.log(code);
 	document.getElementById("code").value = code.join('');
 	console.timeEnd("time2");
 	ctx.clearRect(0, 0, canvas.width, canvas.height);

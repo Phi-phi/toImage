@@ -71,7 +71,7 @@ class toImage{
 		$im 	= $this -> im;
 		$rgb 	= array();
 
-		echo $len."-".$total."<br>";
+		//echo $len."-".$total."<br>";
 
 		for($i = 1; $i < $total + 1; ++$i){
 			if(! ($x = $i % $side)){

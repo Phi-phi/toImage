@@ -7,42 +7,39 @@ class toCode{
 	function setImg(){
 		if (isset($_FILES['src_img']['error']) && is_int($_FILES['src_img']['error'])) {
 
-		try {
-			// $_FILES['upfile']['error'] の値を確認
-			switch ($_FILES['src_img']['error']) {
-			    case UPLOAD_ERR_OK: // OK
-			        break;
-			    case UPLOAD_ERR_NO_FILE:   // ファイル未選択
-			        throw new RuntimeException('ファイルが選択されていません');
-			    case UPLOAD_ERR_INI_SIZE:  // php.ini定義の最大サイズ超過
-			    case UPLOAD_ERR_FORM_SIZE: // フォーム定義の最大サイズ超過
-			        throw new RuntimeException('ファイルサイズが大きすぎます');
-			    default:
-			        throw new RuntimeException('その他のエラーが発生しました');
-			}
+			try {
+				switch ($_FILES['src_img']['error']) {
+				    case UPLOAD_ERR_OK: // OK
+				        break;
+				    case UPLOAD_ERR_NO_FILE:
+				        throw new RuntimeException('No File selected');
+				    case UPLOAD_ERR_INI_SIZE:
+				    case UPLOAD_ERR_FORM_SIZE:
+				        throw new RuntimeException('Too Large File');
+				    default:
+				        throw new RuntimeException('Unidentified err.');
+				}
 
-			// $_FILES['upfile']['mime']の値はブラウザ側で偽装可能なので、MIMEタイプを自前でチェックする
-			$type = @exif_imagetype($_FILES['src_img']['tmp_name']);	
+				$type = @exif_imagetype($_FILES['src_img']['tmp_name']);
 
-			if (!in_array($type, [IMAGETYPE_GIF, IMAGETYPE_JPEG, IMAGETYPE_PNG], true)) {
-			    throw new RuntimeException('画像形式が未対応です');
-			}
+				if (!in_array($type, [IMAGETYPE_GIF, IMAGETYPE_JPEG, IMAGETYPE_PNG], true)) {
+				    throw new RuntimeException("We can't know this file");
+				}
 
-			// ファイルデータからSHA-1ハッシュを取ってファイル名を決定し、ファイルを保存する
-			$path = sprintf('./img/tmp/%s', $_FILES['src_img']['name']);
-			if (!move_uploaded_file($_FILES['src_img']['tmp_name'], $path)) {
-			    throw new RuntimeException('ファイル保存時にエラーが発生しました');
-			}
-		       chmod($path, 0644);
+				$path = sprintf('./img/tmp/%s', $_FILES['src_img']['name']);
+				if (!move_uploaded_file($_FILES['src_img']['tmp_name'], $path)) {
+				    throw new RuntimeException('File saving error');
+				}
+			       chmod($path, 0644);
 
-		        $msg = ['green', 'ファイルは正常にアップロードされました'];
-		        $this -> path = $path;
+			        $msg = ['green', 'Uploaded ok'];
 
-		    } catch (RuntimeException $e) {
+			} catch (RuntimeException $e) {
 
-		        $msg = ['red', $e->getMessage()];
+			        $msg = ['red', $e->getMessage()];
 
 			}
+			$this -> path = $path;
 		}
 	}
 

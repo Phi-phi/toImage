@@ -13,6 +13,6 @@ if(isset($_POST["escape"]) && $_POST["escape"] == "1"){
 }
 
 $code = $toco -> test($which);
-echo $time = microtime(true) - $_SERVER["REQUEST_TIME_FLOAT"];
+//echo $time = microtime(true) - $_SERVER["REQUEST_TIME_FLOAT"];
 
 echo "<br>".nl2br($code);
